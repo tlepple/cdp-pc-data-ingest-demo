@@ -4,7 +4,7 @@
 ##################################################################################
  env.properties file to set variables used in scripts below
 #########################################################################################
-. ~/cdp-pc-data-ingest-demo/env.properties
+. /root/cdp-pc-data-ingest-demo/env.properties
 
 ##################################################################################
 # define variables from json objects in rest calls 
@@ -217,7 +217,7 @@ fake = Faker() # <--- Don't Forgot this
 startKey = int(sys.argv[1])
 iterateVal = int(sys.argv[2])
 
-producer = KafkaProducer(api_version=(2, 0, 1),bootstrap_servers=[${KAFKA_BROKERS}],security_protocol='SASL_SSL',sasl_mechanism='PLAIN',sasl_plain_username=${CDP_ENV_USER},sasl_plain_password=${CDP_ENV_PWD},ssl_cafile='/var/lib/cloudera-scm-agent/agent-cert/cm-auto-global_cacerts.pem',value_serializer=lambda v: simplejson.dumps(v, default=myconverter).encode('utf-8'))
+producer = KafkaProducer(api_version=(2, 0, 1),bootstrap_servers=[${KAFKA_BROKERS}],security_protocol='SASL_SSL',sasl_mechanism='PLAIN',sasl_plain_username='${CDP_ENV_USER}',sasl_plain_password='${CDP_ENV_PWD}',ssl_cafile='/var/lib/cloudera-scm-agent/agent-cert/cm-auto-global_cacerts.pem',value_serializer=lambda v: simplejson.dumps(v, default=myconverter).encode('utf-8'))
  
 
 # functions to display errors
