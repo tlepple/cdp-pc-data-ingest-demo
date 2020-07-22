@@ -1,5 +1,21 @@
 #!/bin/bash
 
+
+##################################################################################
+ env.properties file to set variables used in scripts below
+#########################################################################################
+. ~/cdp-pc-data-ingest-demo/env.properties
+
+##################################################################################
+# define variables from json objects in rest calls 
+##################################################################################
+#  get kafka service name
+KAFKA_SERVICE_NAME=`curl -k -s -u ${CDP_ENV_USER}:${CDP_ENV_PWD} https://tonydavis-tola-kafka-master3.tonydavi.a465-9q4k.cloudera.site:7183/api/v41/clusters/${KAFKA_ENV_NAME}/services/ | jq '.items[] | select(.type=="KAFKA")' | jq -r '.name'`
+
+# get kafka brokers
+KAFKA_BROKERS=`curl -s -k -u ${CDP_ENV_USER}:${CDP_ENV_PWD} https://tonydavis-tola-kafka-master3.tonydavi.a465-9q4k.cloudera.site:7183/api/v41/clusters/${KAFKA_ENV_NAME}/services/${KAFKA_SERVICE_NAME}/roles | jq '.items[] | select(.type=="KAFKA_BROKER")' | jq -r '.hostRef.hostname' | awk '{printf "%s", "\x27" $0} { printf(":9093" "\x27") } {printf ","}' | sed 's/,$//'`
+
+
 #########################################################################################
 # setup aws credentials file for boto3
 #########################################################################################
@@ -133,7 +149,7 @@ from datagenerator import DataGenerator
 #########################################################################################
 #       Define variables
 #########################################################################################
-bname_in = sys.argv[3]
+#bname_in = sys.argv[3]
 dg = DataGenerator()
 fake = Faker() # <--- Don't Forgot this
 now = datetime.datetime.now()
@@ -147,7 +163,8 @@ fname = dir_location + prefix + tname + suffix
 s3bucket_location = 'data_gen/customer/' + prefix + tname + suffix
 
 s3 = boto3.resource('s3')
-bucket_name = bname_in
+#bucket_name = bname_in
+bucket_name=${S3_BNAME}
 #object_name = fname
 
 dest = target_location + prefix + tname + suffix
@@ -182,6 +199,57 @@ s3.meta.client.upload_file(fname, bucket_name, s3bucket_location)
 
 EOF
 
+##################################################################################
+#  create python script to send data to kafka script
+##################################################################################
+cat <<EOF > ~/datagen/kafka_dg.py
+import time
+from faker import Faker
+from datagenerator import DataGenerator
+import simplejson
+import sys
+from kafka import KafkaProducer
+#########################################################################################
+#       Define variables
+#########################################################################################
+dg = DataGenerator()
+fake = Faker() # <--- Don't Forgot this
+startKey = int(sys.argv[1])
+iterateVal = int(sys.argv[2])
+
+producer = KafkaProducer(api_version=(2, 0, 1),bootstrap_servers=[${KAFKA_BROKERS}],security_protocol='SASL_SSL',sasl_mechanism='PLAIN',sasl_plain_username=${CDP_ENV_USER},sasl_plain_password=${CDP_ENV_PWD},ssl_cafile='/var/lib/cloudera-scm-agent/agent-cert/cm-auto-global_cacerts.pem',value_serializer=lambda v: simplejson.dumps(v, default=myconverter).encode('utf-8'))
+ 
+
+# functions to display errors
+def myconverter(obj):
+        if isinstance(obj, (datetime.datetime)):
+                return obj.__str__()
+#########################################################################################
+#       Code execution below
+#########################################################################################
+
+# While loop
+while(True):
+        fpg = dg.fake_person_generator(startKey, iterateVal, fake)
+        for person in fpg:
+                print(simplejson.dumps(person, ensure_ascii=False, default = myconverter))
+                producer.send('dgCustomer', person)
+        producer.flush()
+        print("Customer Done.")
+        print('\n')
+
+        txn = dg.fake_txn_generator(startKey, iterateVal, fake)
+        for tranx in txn:
+                print(tranx)
+                producer.send('dgTxn', tranx)
+        producer.flush()
+        print("Transaction Done.")
+        print('\n')
+# increment and sleep
+        startKey += iterateVal
+        time.sleep(3)
+
+EOF
 ##################################################################################
 ##################################################################################
 ##################################################################################
