@@ -1,0 +1,23 @@
+{
+ "type": "record",
+ "namespace": "com.cloudera.sa.json.data",
+ "name": "JSONGenericRecord",
+ "doc": "Json records generically parsed to Avro",
+ "fields": [
+ 			
+ 			
+ 			{"name": "last_name", "type": ["null", "string"]},
+ 			{"name": "first_name", "type": ["null", "string"]},
+ 			{"name": "street_address", "type": ["null", "string"]},
+ 			{"name": "city", "type": ["null", "string"]},
+ 			{"name": "state", "type": ["null", "string"]},
+ 			{"name": "zip_code", "type": ["null", "string"]},
+ 			{"name": "email", "type": ["null", "string"]},
+ 			{"name": "home_phone", "type": ["null", "string"]},
+ 			{"name": "mobile", "type": ["null", "string"]},
+ 			{"name": "ssn", "type": ["null", "string"]},
+ 			{"name": "job_title", "type": ["null", "string"]},
+ 			{"name": "create_date", "type": ["null", "string"]},
+ 			{"name": "cust_id", "type": ["null", "int"]}
+ 		   ]
+}

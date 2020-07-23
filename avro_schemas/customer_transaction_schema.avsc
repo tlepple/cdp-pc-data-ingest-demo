@@ -1,0 +1,17 @@
+{
+ "type": "record",
+ "namespace": "com.cloudera.sa.json.data",
+ "name": "JSONGenericRecordTxn",
+ "doc": "Json records generically parsed to Avro",
+ "fields": [
+ 			
+ 			{"name": "transact_id", "type": ["null", "string"]},
+ 			{"name": "category", "type": ["null", "string"]},
+ 			{"name": "barcode", "type": ["null", "string"]},
+ 			{"name": "item_desc", "type": ["null", "string"]},
+ 			{"name": "amount", "type": ["null", "double"]},
+ 			{"name": "transaction_date", "type": ["null", "string"]},
+ 			{"name": "cust_id", "type": ["null", "int"]}
+ 			
+ 		   ]
+}
