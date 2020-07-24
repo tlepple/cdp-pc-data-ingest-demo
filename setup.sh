@@ -45,11 +45,11 @@ EOF
 cd ~/cdp-pc-data-ingest-demo
 
 # install needed python packages
-python3.6 -m pip install uuid
-python3.6 -m pip install kafka-python
-python3.6 -m pip install simplejson
-python3.6 -m pip install faker
-python3.6 -m pip install boto3
+python3 -m pip install uuid
+python3 -m pip install kafka-python
+python3 -m pip install simplejson
+python3 -m pip install faker
+python3 -m pip install boto3
 
 #########################################################################################
 #########################################################################################
