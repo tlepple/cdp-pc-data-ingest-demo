@@ -257,3 +257,19 @@ EOF
 # change back to starting directory
 cd ~/cdp-pc-data-ingest-demo
 
+##################################################################################
+##################################################################################
+# copy schemas to s3
+#aws s3 cp /root/cdp-pc-data-ingest-demo/avro_schemas/customer_avro_schema.avsc s3://${S3_BNAME}${S3_BNAME_PREFIX}customer_avro_schema.avsc
+#aws s3 cp /root/cdp-pc-data-ingest-demo/avro_schemas/customer_transaction_schema.avsc s3://${S3_BNAME}${S3_BNAME_PREFIX}customer_transaction_schema.avsc
+
+aws s3 cp /root/cdp-pc-data-ingest-demo/avro_schemas/customer_avro_schema.avsc s3://tonydavis-tola/warehouse/tablespace/external/hive/tola_ext.db/customer_avro_schema.avsc
+
+aws s3 cp /root/cdp-pc-data-ingest-demo/avro_schemas/customer_transaction_schema.avsc s3://tonydavis-tola/warehouse/tablespace/external/hive/tola_ext.db/customer_transaction_schema.avsc
+
+##################################################################################
+##################################################################################
+#  create the hive tables from the schemas
+beeline -u ${HIVE2_JDBC_URL} -n ${CDP_ENV_USER} -p ${CDP_ENV_PWD} -f ./tables.hsql
+##################################################################################
+##################################################################################

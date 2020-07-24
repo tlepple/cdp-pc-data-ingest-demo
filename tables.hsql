@@ -1,0 +1,9 @@
+CREATE EXTERNAL TABLE tola_ext.customer_history_avro
+  ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.avro.AvroSerDe'
+  STORED AS AVRO
+  TBLPROPERTIES ('avro.schema.url'='s3a://tonydavis-tola/warehouse/tablespace/external/hive/tola_ext.db/schemas/customer/customer_avro_schema.avsc');
+  
+CREATE EXTERNAL TABLE tola_ext.customer_txn_history_avro
+  ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.avro.AvroSerDe'
+  STORED AS AVRO
+  TBLPROPERTIES ('avro.schema.url'='s3a://tonydavis-tola/warehouse/tablespace/external/hive/tola_ext.db/schemas/txn/customer_transaction_schema.avsc');
